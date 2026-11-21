@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Pastel Note ♡</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #fff5fa;
+  color: #79566c;
+  font-family: sans-serif;
+}
+
+main {
+  max-width: 600px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  color: #d58caf;
+  font-size: 28px;
+}
+
+.subtitle { color: #b99aaf; }
+
+input, textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #f0d5e3;
+  border-radius: 12px;
+  background: white;
+  color: #79566c;
+  font: inherit;
+  margin-bottom: 12px;
+}
+
+textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+button {
+  border: 0;
+  border-radius: 20px;
+  padding: 12px 20px;
+  background: #e9b6d0;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  margin: 4px;
+}
+
+button:disabled {
+  opacity: .5;
+}
+
+.secondary { background: #c9b8e8; }
+
+#status {
+  text-align: center;
+  font-size: 14px;
+  color: #b27d9c;
+  margin: 12px 0;
+}
+
+#notes {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.note {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #f5dfeb;
+  overflow-wrap: anywhere;
+}
+
+.note h3 { color: #c27fa4; }
+
+.note p {
+  white-space: pre-wrap;
+}
+
+#message {
+  color: #a66d8c;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+<main>
+<header>
+  <h1>My Pastel Note ♡</h1>
+  <p class="subtitle">ちいさな毎日のメモ帳</p>
+</header>
+
+<section id="login">
+  <p>自分のGoogleアカウントでログインしてね ♡</p>
+  <button id="loginBtn">Googleでログイン</button>
+</section>
+
+<section id="app" hidden>
+  <p id="welcome"></p>
+  <button id="logoutBtn" class="secondary">ログアウト</button>
+
+  <h2>今日のメモ ♡</h2>
+  <input id="title" placeholder="メモのタイトル">
+  <textarea id="body" placeholder="ここにメモを書いてね..."></textarea>
+
+  <button id="saveBtn">＋ メモを保存</button>
+  <button id="cancelBtn" class="secondary" hidden>編集をやめる</button>
+
+  <p id="message"></p>
+  <section id="notes"></section>
+</section>
+</main>
+
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+// Firebaseの設定情報をここに入れてね
+const firebaseConfig 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+<title>My Pastel Note</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #fff5fa;
+  color: #79566c;
+  font-family: sans-serif;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  color: #d58caf;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: #b99aaf;
+  font-size: 14px;
+}
+
+main {
+  max-width: 600px;
+  margin: auto;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #f0d5e3;
+  border-radius: 12px;
+  background: white;
+  color: #79566c;
+  font: inherit;
+  margin-bottom: 12px;
+}
+
+textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+button {
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  background: #e9b6d0;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:active {
+  opacity: 0.7;
+}
+
+#notes {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.note {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #f5dfeb;
+  overflow-wrap: anywhere;
+}
+
+.note h3 {
+  margin-top: 0;
+  color: #c27fa4;
+}
+
+.note p {
+  white-space: pre-wrap;
+}
+
+.note small {
+  color: #b99aaf;
+}
+
+.note button {
+  margin: 6px 6px 0 0;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.delete {
+  background: #c9b8e8;
+}
+
+footer {
+  text-align: center;
+  margin-top: 24px;
+  color: #b99aaf;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>My Pastel Note ♡</h1>
+  <p class="subtitle">
+    ちいさな毎日のメモ帳
+  </p>
+</header>
+
+<main>
+  <input id="title"
+    placeholder="メモのタイトル ♡">
+
+  <textarea id="body"
+    placeholder="ここにメモを書いてね..."></textarea>
+
+  <button id="save">＋ メモを保存</button>
+
+  <section id="notes"></section>
+
+  <footer>
+    あなたの毎日をかわいく記録 ♡
+  </footer>
+</main>
+
+<script>
+const titleInput = document.getElementById("title");
+const bodyInput = document.getElementById("body");
+const notesArea = document.getElementById("notes");
+
+let notes = JSON.parse(
+  localStorage.getItem("pastelNotes") || "[]"
+);
+
+let editingId = null;
+
+function saveAll() {
+  localStorage.setItem(
+    "pastelNotes",
+    JSON.stringify(notes)
+  );
+}
+
+function renderNotes() {
+  notesArea.replaceChildren();
+
+  notes.forEach(note => {
+    const card = document.createElement("article");
+    card.className = "note";
+
+    const title = document.createElement("h3");
+    title.textContent = note.title || "タイトルなし ♡";
+
+    const content = document.createElement("p");
+    content.textContent = note.body;
+
+    const date = document.createElement("small");
+    date.textContent = note.date;
+
+    const edit = document.createElement("button");
+    edit.textContent = "編集";
+
+    edit.onclick = () => {
+      titleInput.value = note.title;
+      bodyInput.value = note.body;
+      editingId = note.id;
+      document.getElementById("save").textContent =
+        "変更を保存";
+      titleInput.focus();
+    };
+
+    const remove = document.createElement("button");
+    remove.textContent = "削除";
+    remove.className = "delete";
+
+    remove.onclick = () => {
+      if (!confirm("このメモを削除する？")) return;
+      notes = notes.filter(n => n.id !== note.id);
+      saveAll();
+      renderNotes();
+    };
+
+    card.append(title, content, date, edit, remove);
+    notesArea.append(card);
+  });
+}
+
+document.getElementById("save").onclick = () => {
+  const title = titleInput.value.trim();
+  const body = bodyInput.value.trim();
+
+  if (!title && !body) {
+    alert("メモを書いてね ♡");
+    return;
+  }
+
+  if (editingId !== null) {
+    notes = notes.map(note =>
+      note.id === editingId
+        ? { ...note, title, body }
+        : note
+    );
+  } else {
+    notes.unshift({
+      id: Date.now(),
+      title,
+      body,
+      date: new Date().toLocaleDateString("ja-JP")
+    });
+  }
+
+  saveAll();
+
+  titleInput.value = "";
+  bodyInput.value = "";
+  editingId = null;
+
+  document.getElementById("save").textContent =
+    "＋ メモを保存";
+
+  renderNotes();
+};
+
+renderNotes();
+</script>
+</body>
+</html>
